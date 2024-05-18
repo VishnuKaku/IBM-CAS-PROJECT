@@ -11,6 +11,7 @@ import './SignUp.css'
 import UserService from '../services/UserService';
 import { ToastContainer, toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
+import { Form } from 'react-bootstrap';
 
 function SignUp() {
 
@@ -25,7 +26,8 @@ function SignUp() {
     })
   
 
-    const handleSubmit = ()=>{
+    const handleSubmit = (event)=>{
+      event.preventDefault();
         UserService.registerUser(newUser).then((resp)=>{
             console.log("registered")
             toast.success(`${newUser.username} is registered!`)
@@ -38,7 +40,6 @@ function SignUp() {
     }
 
    const handleChange = (event)=>{
-
     setNewUser({...newUser,[event.target.name]:event.target.value})
    }
 
@@ -49,6 +50,7 @@ function SignUp() {
     <MDBCard className='m-5' style={{ maxWidth: '600px' }}>
       <MDBCardBody className='px-5'>
         <h2 className="text-uppercase text-center mb-5">Create an account</h2>
+        <Form onSubmit={handleSubmit}>
         <MDBInput wrapperClass='mb-4' name='name' value={newUser.name} label='Your Name' size='lg' id='form1' type='text' onChange={handleChange} />
         <MDBInput wrapperClass='mb-4' name='email' value={newUser.email} label='Your Email' size='lg' id='form2' type='email' onChange={handleChange} />
         <MDBInput wrapperClass='mb-4' name='username' value={newUser.username} label='Username' size='lg' id='form3' type='text' onChange={handleChange} />
@@ -59,7 +61,8 @@ function SignUp() {
           <MDBCheckbox name='flexCheck' id='flexCheckDefault' label='I agree to all statements in Terms of service' />
         </div> */}
         <br/>
-        <MDBBtn className='mb-4 w-100' color='info' size='lg' onClick={handleSubmit}>Register</MDBBtn>
+        <MDBBtn className='mb-4 w-100' color='info' size='lg' type='submit'>Register</MDBBtn>
+        </Form>
       </MDBCardBody>
     </MDBCard>
   </MDBContainer>

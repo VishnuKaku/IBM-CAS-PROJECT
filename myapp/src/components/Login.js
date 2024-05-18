@@ -89,12 +89,11 @@ const Login = () => {
 
                                 <h2 className="fw-bold mb-2 text-center">Sign in</h2>
                                 <p className="text-white-50 mb-3">Please enter your login and password!</p>
-
-                                <MDBInput wrapperClass='mb-4 w-100' name='username' value={credentials.value} label='Username' type='text' size="lg" onChange={handleChange} />
-                                <MDBInput wrapperClass='mb-4 w-100' name='password' value={credentials.value} label='Password' type='password' size="lg" onChange={handleChange} />
-
-                                <MDBBtn className="mb-2 w-100" color='info' size='lg' onClick={handleSubmit}>Login</MDBBtn>
-
+                                <Form onSubmit={handleSubmit}>
+                                    <MDBInput wrapperClass='mb-4 w-100' name='username' value={credentials.username} label='Username' type='text' size="lg" onChange={handleChange} />
+                                    <MDBInput wrapperClass='mb-4 w-100' name='password' value={credentials.password} label='Password' type='password' size="lg" onChange={handleChange} />
+                                    <MDBBtn className="mb-2 w-100" color='info' size='lg' type="submit">Login</MDBBtn>
+                                </Form>
                                 <hr className="my-4" />
 
 

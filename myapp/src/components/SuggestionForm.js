@@ -41,9 +41,11 @@ const SuggestionForm = () => {
     };
 
     return (
-        <div className="container">
-            <h1>Suggestion Form</h1>
-            <form onSubmit={handleSubmit}>
+        <div className="my-5 city-background container-fluid">
+      <div className="card shadow-sm smaller-form form-animation">
+        <div className="card-body">
+          <h1 className="card-title text-center">Suggestion Form</h1>
+          <form onSubmit={handleSubmit}>
                 <div className="mb-3">
                     <label htmlFor="title" className="form-label">Title</label>
                     <input
@@ -87,7 +89,9 @@ const SuggestionForm = () => {
                 </div>
                 <button type="submit" className="btn btn-primary">Submit</button>
             </form>
-            <ToastContainer/>
+            </div>
+            </div>
+            <ToastContainer position="top-center" autoClose={5000} />
         </div>
     );
 };

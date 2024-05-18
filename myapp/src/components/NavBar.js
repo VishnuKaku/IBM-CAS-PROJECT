@@ -1,16 +1,35 @@
 import React, { useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import "./NavBar.css"
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { useSelector, useDispatch } from 'react-redux';
+import { setCurrentUser,setToken,setLoggedIn } from '../redux/UserSlice';
 
 function NavBar() {
+
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
+
     // Define state to manage the active link
     const [activeLink, setActiveLink] = useState('Home');
+    const isLoggedIn = useSelector(store=>store.user.isLoggedIn)
+    const userRole = useSelector(store=>store.user.currentUser.role)
+    const isEmployee = userRole === 'Employee'
+    const isCitizen = userRole === 'Citizen'
+
 
     // Function to handle click event on navigation links
     const handleLinkClick = (link) => {
         setActiveLink(link);
     };
+
+    const logout = ()=>{
+        dispatch(setCurrentUser({}));
+        dispatch(setToken(''));
+        dispatch(setLoggedIn(false))
+        navigate(['/logout'])
+        
+    }
 
     return (
         <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
@@ -29,7 +48,7 @@ function NavBar() {
                                 Home
                             </button></Link> 
                         </li>
-                        <li className="nav-item dropdown">
+                        {isLoggedIn && <li className="nav-item dropdown">
                             <button
                                 className="nav-link dropdown-toggle"
                                 id="suggestionsDropdown"
@@ -39,23 +58,23 @@ function NavBar() {
                                 Suggestions
                             </button>
                             <ul className="dropdown-menu" aria-labelledby="suggestionsDropdown">
-                                <li>
+                                {isCitizen &&<li>
                                    <Link className='link-no-underline' to={'/submit-suggestion'}> <button className="dropdown-item">Submit Suggestion</button></Link>
-                                </li>
-                                <li>
-                                    <button
+                                </li>}
+                                {isCitizen && <li>
+                                    <Link className='link-no-underline' to={'/my-suggestions'}><button
                                         className="dropdown-item"
                                         onClick={() => handleLinkClick('MySuggestions')}
                                     >
                                         My Suggestions
-                                    </button>
-                                </li>
-                                <li>
+                                    </button></Link>
+                                </li>}
+                                 <li>
                                 <Link className='link-no-underline' to={'/show-suggestion'}> <button className="dropdown-item">All Suggestions</button></Link>
                                 </li>
                             </ul>
-                        </li>
-                        <li className="nav-item dropdown">
+                        </li>}
+                        {isLoggedIn && <li className="nav-item dropdown">
                             <button
                                 className="nav-link dropdown-toggle"
                                 id="complaintsDropdown"
@@ -65,24 +84,25 @@ function NavBar() {
                                 Complaints
                             </button>
                             <ul className="dropdown-menu" aria-labelledby="complaintsDropdown">
-                                <li>
+                                {isCitizen && <li>
                                    <Link className='link-no-underline' to={'/raise-complaint'}> <button className="dropdown-item">Raise Complaint</button></Link>
-                                </li>
-                                <li>
+                                </li>}
+                                {isCitizen && <li>
                                    <Link className='link-no-underline' to={'/show-complaint'}> <button className="dropdown-item">My Complaints</button></Link>
-                                </li>
-                                <li>
+                                </li>}
+                                {isEmployee && <li>
                                 <Link className='link-no-underline' to={'/show-complaint'}><button className="dropdown-item" >All Complaints</button></Link>
-                                </li>
+                                </li>}
                             </ul>
-                        </li>
-                        <li className="nav-item">
+                        </li>}
+                        {isLoggedIn && <li className="nav-item">
                             <Link className='link-no-underline' to={'/profile'}><button type='button' className="nav-link">Profile</button></Link>
-                        </li>
+                        </li>}
                     </ul>
                     <div className="d-flex">
-                        <Link to={'/login'}><button type="button" className="btn btn-outline-primary me-2">Login</button></Link>
-                        <Link to={'/signup'}><button type="button" className="btn btn-primary me-0">Sign-up</button></Link>
+                        {!isLoggedIn && <Link to={'/login'}><button type="button" className="btn btn-outline-primary me-2">Login</button></Link>}
+                        {isLoggedIn && <button type="button" className="btn btn-outline-primary me-2" onClick={logout}>Logout</button>}
+                        {!isLoggedIn && <Link to={'/signup'}><button type="button" className="btn btn-primary me-0">Sign-up</button></Link>}
                     </div>
                 </div>
             </div>

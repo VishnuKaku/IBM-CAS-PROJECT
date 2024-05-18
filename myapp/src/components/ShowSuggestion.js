@@ -6,7 +6,7 @@ import CommentService from '../services/comment.service';
 import { useSelector } from 'react-redux';
 import './ShowSuggestion.css';
 
-const ShowSuggestion = () => {
+const ShowSuggestion = (props) => {
     const [suggestions, setSuggestions] = useState([]);
     const [filteredSuggestions, setFilteredSuggestions] = useState([]);
     const [showModal, setShowModal] = useState(false);
@@ -17,16 +17,17 @@ const ShowSuggestion = () => {
     const [showCommentBox, setShowCommentBox] = useState({});
     const user = useSelector(store => store.user.currentUser);
     const userId = user._id;
-    const isAdmin = user.role === 'Admin'
-    const [newStatus, setNewStatus] = useState();
+    const isEmployee = user.role === 'Employee';
+    const [newStatus, setNewStatus] = useState('');
+    const mySuggestion = props.mySuggestion;
 
     useEffect(() => {
         fetchSuggestions();
-    }, []);
+    }, [props.mySuggestion]);
 
     useEffect(() => {
-        setFilteredSuggestions(suggestions)
-    }, [suggestions])
+        setFilteredSuggestions(suggestions);
+    }, [suggestions]);
 
     const handleStatusChange = async (suggestionId) => {
         try {
@@ -39,8 +40,13 @@ const ShowSuggestion = () => {
     };
 
     const fetchSuggestions = async () => {
+        let response;
         try {
-            const response = await SuggestionService.getAllSuggestions();
+            if (mySuggestion) {
+                response = await SuggestionService.getSuggestionByCreatorId(userId);
+            } else {
+                response = await SuggestionService.getAllSuggestions();
+            }
             setSuggestions(response.data);
         } catch (error) {
             console.error('Error fetching suggestions:', error);
@@ -148,6 +154,7 @@ const ShowSuggestion = () => {
 
     const handleUpvote = async (suggestionId) => {
         try {
+            console.log(suggestionId, userId);
             await SuggestionService.upvoteSuggestion(suggestionId, userId);
             fetchSuggestions(); // Refresh suggestions after upvoting
         } catch (error) {
@@ -155,9 +162,9 @@ const ShowSuggestion = () => {
         }
     };
 
-    const  hasVoted = ()=>{
-
-    }
+    const hasVoted = (suggestion) => {
+        return suggestion.votes.includes(userId);
+    };
 
     return (
         <>
@@ -176,12 +183,12 @@ const ShowSuggestion = () => {
                             <Card>
                                 <Card.Body>
                                     <div className="d-flex justify-content-between align-items-center">
-                                        <Card.Title>{suggestion.title}</Card.Title>
+                                        <Card.Title><strong>Title: </strong>{suggestion.title}</Card.Title>
                                         <Badge bg={getStatusBadgeVariant(suggestion.status)}>{suggestion.status}</Badge>
                                     </div>
-                                    <Card.Text>{suggestion.description}</Card.Text>
+                                    <Card.Text><strong>Description: </strong>{suggestion.description}</Card.Text>
                                     <Card.Text><strong>Category:</strong> {suggestion.category}</Card.Text>
-                                    <Card.Text><strong>Creator:</strong> {suggestion.creator.name}</Card.Text>
+                                    {!mySuggestion && <Card.Text><strong>Creator:</strong> {suggestion.creator &&   suggestion.creator.name}</Card.Text>}
                                     <div className="d-flex align-items-center mt-3">
                                         <Button variant="link" className="p-0 me-3 no-underline" onClick={() => handleShowComments(suggestion)}>
                                             <i className="fas fa-comments me-1"></i> <span className="align-middle">Show Comments</span>
@@ -189,18 +196,17 @@ const ShowSuggestion = () => {
                                         <Button variant="link" className="p-0 me-3 no-underline" onClick={() => toggleCommentBox(suggestion._id)}>
                                             <i className="fas fa-reply me-1"></i> <span className="align-middle">Reply</span>
                                         </Button>
-                                        {!hasVoted(suggestion) && (
+                                        {hasVoted(suggestion) ? (
+                                            <Button variant="link" className="p-0 no-underline text-primary" disabled>
+                                                <i className="fas fa-thumbs-up me-1"></i> <span className="align-middle">{suggestion.votes.length} Upvoted</span>
+                                            </Button>
+                                        ) : (
                                             <Button variant="link" className="p-0 no-underline" onClick={() => handleUpvote(suggestion._id)}>
                                                 <i className="fas fa-thumbs-up me-1"></i> <span className="align-middle">{suggestion.votes.length} Upvote</span>
                                             </Button>
                                         )}
-                                        {hasVoted(suggestion) && (
-                                            <Button variant="link" className="p-0 no-underline text-primary" disabled>
-                                                <i className="fas fa-thumbs-up me-1"></i> <span className="align-middle">Upvoted</span>
-                                            </Button>
-                                        )}
                                     </div>
-                                    {isAdmin && (
+                                    {isEmployee && (
                                         <Form.Group controlId="newStatus">
                                             <Form.Label>Update Status:</Form.Label>
                                             <Form.Select onChange={(e) => setNewStatus(e.target.value)} value={newStatus}>
@@ -241,12 +247,11 @@ const ShowSuggestion = () => {
                     <Modal.Body>
                         {currentSuggestion && (
                             <div>
-                                <p><strong>Creator:</strong> {currentSuggestion.creator.name}</p>
+                                {!mySuggestion && <p><strong>Creator:</strong> {currentSuggestion.creator.name}</p>}
                                 <p><strong>Title:</strong> {currentSuggestion.title}</p>
                                 <p><strong>Description:</strong> {currentSuggestion.description}</p>
                                 <p><strong>Category:</strong> {currentSuggestion.category}</p>
                                 <p><strong>Status:</strong> <Badge bg={getStatusBadgeVariant(currentSuggestion.status)}>{currentSuggestion.status}</Badge></p>
-                               
                             </div>
                         )}
                         <h5>Comments</h5>

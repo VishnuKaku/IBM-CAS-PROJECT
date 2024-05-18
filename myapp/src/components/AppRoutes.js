@@ -9,6 +9,7 @@ import ComplaintForm from './ComplaintForm'
 import ShowComplaint from './ShowComplaint'
 import SuggestionForm from './SuggestionForm'
 import ShowSuggestion from './ShowSuggestion'
+import Logout from './Logout'
 
 
 const AppRoutes = () => {
@@ -25,13 +26,16 @@ const AppRoutes = () => {
 
            {/* <Route path='/home' Component={home}></Route> */}
           <Route path='/login' Component={Login}></Route> 
-          <Route path='/profile' Component={Profile}></Route>
+          {isLoggedIn && <Route path='/profile' Component={Profile}></Route>}
           <Route path='/signup' Component={SignUp}></Route>
-          <Route path='/raise-complaint' Component={ComplaintForm}></Route>
-          <Route path='/show-complaint' Component={ShowComplaint}></Route>
-          <Route path='/all-complaints' Component={ShowComplaint}></Route>
-          <Route path='/submit-suggestion' Component={SuggestionForm}></Route>
-          <Route path='/show-suggestion' Component={ShowSuggestion}></Route>
+          {isLoggedIn && <Route path='/raise-complaint' Component={ComplaintForm}></Route>}
+          {isLoggedIn && <Route path='/show-complaint' Component={ShowComplaint}></Route>}
+          {isLoggedIn && <Route path='/all-complaints' Component={ShowComplaint}></Route>}
+          {isLoggedIn && <Route path='/submit-suggestion' Component={SuggestionForm}></Route>}
+          {isLoggedIn && <Route path='/show-suggestion' Component={ShowSuggestion}></Route>}
+          {isLoggedIn && <Route path='/my-suggestions' element={<ShowSuggestion mySuggestion = {true}/>}></Route>}
+          {isLoggedIn && <Route path='/logout' Component={Logout}></Route>}
+          <Route path='*' Component={Login}></Route>
 
           {/* {!isLoggedIn && <Route path='/login' element={<Login /> }></Route>}
         <Route path='/dashboard' Component={Dashboard}> </Route>

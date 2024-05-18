@@ -70,9 +70,10 @@ const Profile = () => {
                       alt="Avatar" className="my-5" style={{ width: '80px' }} fluid />
                     <MDBTypography tag="h5">{userData.name}</MDBTypography>
                     <hr className="mt-0 mb-4" />
-                    <MDBCardText >Role:</MDBCardText>
-                    <MDBCardText >{userData.role}</MDBCardText>
-                    <MDBIcon far icon="edit mb-5" />
+                    {user.designation?<><MDBCardText >Designation: </MDBCardText>
+                    <MDBCardText >{userData.designation}</MDBCardText></>:<><MDBCardText >Role:</MDBCardText>
+                    <MDBCardText >{userData.role}</MDBCardText></>}
+                   {/* <MDBIcon far icon="edit mb-5" /> */}
                   </MDBCol>
                   <MDBCol md="8">
                     <MDBCardBody className="p-4">
